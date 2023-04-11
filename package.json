@@ -1,0 +1,70 @@
+{
+    "name": "rpm-spec-plugin",
+    "displayName": "RPM Spec Language Support",
+    "description": "Language Support for RPM Spec",
+    "keywords": [
+        "rpm",
+        "spec"
+    ],
+    "version": "0.0.1",
+    "publisher": "tcse-iscas",
+    "repository": "https://gitee.com/rvsmart-porting/rpm-spec-plugin",
+    "engines": {
+        "vscode": "^1.74.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onStartupFinished"
+    ],
+    "main": "./out/web/extension.js",
+    "browser": "./dist/web/extension.js",
+    "enabledApiProposals": [
+        "inlineCompletionsAdditions"
+    ],
+    "contributes": {
+        "commands": [
+            {
+                "command": "extension.inline-completion-settings",
+                "title": "My Inline Completion Demo Settings"
+            }
+        ],
+        "menus": {
+            "editor/inlineCompletions/actions": [
+                {
+                    "command": "extension.inline-completion-settings"
+                }
+            ]
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "compile-web": "webpack",
+        "watch-web": "webpack --watch",
+        "run-in-browser": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=. ./testRoot",
+        "lint": "eslint \"src/**/*.ts\"",
+        "download-api": "vscode-dts dev",
+        "postinstall": "npm run download-api"
+    },
+    "devDependencies": {
+        "@types/node": "^16.18.23",
+        "@types/vscode": "^1.74.0",
+        "@types/webpack-env": "^1.18.0",
+        "@typescript-eslint/eslint-plugin": "^5.42.0",
+        "@typescript-eslint/parser": "^5.42.0",
+        "@vscode/test-web": "^0.0.41",
+        "eslint": "^8.26.0",
+        "process": "^0.11.10",
+        "ts-loader": "^9.4.2",
+        "typescript": "^4.9.4",
+        "vscode-dts": "^0.3.3",
+        "webpack": "^5.78.0",
+        "webpack-cli": "^5.0.1"
+    },
+    "dependencies": {
+        "log4js": "^6.9.1"
+    }
+}

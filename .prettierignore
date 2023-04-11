@@ -1,0 +1,9 @@
+node_modules/
+dist/
+out/
+assets
+.DS_Store
+*.md
+vscode.*.d.ts
+.vscode-test/
+.vscode-test-web/

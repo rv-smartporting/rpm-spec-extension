@@ -1,0 +1,3 @@
+vscode.*.d.ts
+testRoot/
+webpack.config.js

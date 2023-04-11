@@ -1,0 +1,46 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+    "files.exclude": {
+        "**/out": true,
+        "**/.vscode-test": true
+    },
+    "search.exclude": {
+        "**/out": true,
+        "**/.vscode-test": true
+    },
+    // 禁止 tsc 自动检测
+    "typescript.tsc.autoDetect": "off",
+    // typescript 快速修复优先使用单引号
+    "typescript.preferences.quoteStyle": "single",
+    // 保存时自动格式化文件
+    "editor.formatOnSave": true,
+    // 使用 prettier 作为首选格式化工具
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "[markdown]": {
+        "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
+    },
+    // IDE 标尺
+    "editor.rulers": [80, 120],
+    // Format All Files 插件排除文件夹
+    "formatAll.excludeFolders": ["node_modules", "out", ".vscode-test", "assets", "resources", ".vscode-test-web"],
+    "cSpell.words": [
+        "appenders",
+        "iscas",
+        "Mulan",
+        "prewatch",
+        "prismjs",
+        "rvportingtool",
+        "RVPT",
+        "shiki",
+        "tcse",
+        "Upto"
+    ],
+    "commandOnAllFiles.commands": {
+        "Typescript Import Sort": {
+            "command": "extension.typescriptImportsSort",
+            "includeFileExtensions": [".ts"],
+            "excludeFolders": ["node_modules", ".vscode-test", ".vscode-test-web"]
+        }
+    },
+    "npm.exclude": ["**/.vscode-test-web/**"]
+}

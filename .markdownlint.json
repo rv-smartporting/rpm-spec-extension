@@ -1,0 +1,33 @@
+{
+    "MD001": false,
+    "MD013": {
+        "line_length": 120,
+        "tables": false
+    },
+    "MD024": false,
+    "MD025": {
+        "front_matter_title": ""
+    },
+    "MD033": {
+        "allowed_elements": [
+            "a",
+            "img",
+            "sup",
+            "br",
+            "p",
+            "span",
+            "code",
+            "ul",
+            "li",
+            "table",
+            "thead",
+            "th",
+            "tbody",
+            "tr",
+            "td",
+            "CodeGroupItem",
+            "CodeGroup",
+            "tag"
+        ]
+    }
+}
