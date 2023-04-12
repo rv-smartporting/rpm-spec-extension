@@ -36,7 +36,26 @@
                     "command": "extension.inline-completion-settings"
                 }
             ]
-        }
+        },
+        "languages": [
+            {
+                "id": "RPM Spec",
+                "aliases": [
+                    "spec",
+                    "rpmspec"
+                ],
+                "extensions": [
+                    ".spec"
+                ]
+            }
+        ],
+        "grammars": [
+            {
+                "language": "RPM Spec",
+                "scopeName": "source.spec",
+                "path": "resource/rpmspec.tmLanguage.json"
+            }
+        ]
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",

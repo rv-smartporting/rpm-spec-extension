@@ -1,4 +1,4 @@
-Content: %global DATE 20220810
+%global DATE 20220810
 %global gitrev c66b9ee42a4ecd9d14f9724bf0a26019326edf0a
 %global gcc_version 12.1.1
 %global gcc_major 12
