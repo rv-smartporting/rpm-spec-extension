@@ -93,7 +93,7 @@
                 }
             },
             "end": "$",
-            "contentName": "string.quoted",
+            "contentName": "string.quoted.spec",
             "patterns": [
                 {
                     "include": "#numericConstant"
@@ -140,7 +140,7 @@
                     "name": "keyword.control.spec"
                 },
                 "2": {
-                    "name": "variable.name"
+                    "name": "variable.name.spec"
                 }
             },
             "end": "$",
@@ -155,7 +155,7 @@
             "begin": "%(ifarch|ifnarch)",
             "beginCaptures": {
                 "0": {
-                    "name": "keyword.control.ifarch"
+                    "name": "keyword.control.spec"
                 }
             },
             "end": "$",
@@ -172,7 +172,7 @@
             "begin": "%(if)\\b",
             "beginCaptures": {
                 "0": {
-                    "name": "keyword.control.if"
+                    "name": "keyword.control.spec"
                 }
             },
             "end": "$",
@@ -271,11 +271,11 @@
         },
         "numericConstant": {
             "match": "\\b([0-9]+)\\b",
-            "name": "constant.numeric"
+            "name": "constant.numeric.spec"
         },
         "stringValue": {
             "match": "\\b(?![0-9]+$)([\\S]+)\\b",
-            "name": "string.quoted"
+            "name": "string.quoted.spec"
         }
     }
 }
