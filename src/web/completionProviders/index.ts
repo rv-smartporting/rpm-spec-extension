@@ -12,11 +12,16 @@
  * Completion Provider of RPM Spec Plugin
  *
  * Author: Lightning Rainstorm <me@ldby.site>
- * Last Change: Mar 13, 2023
+ * Last Change: Apr 12, 2023
  **************************************************************************************/
 
+import * as vscode from "vscode";
 import { BaseCompletionProvider } from "./baseProvider";
 import { IfArchProvider } from "./ifArchProvider";
 
-export const Providers: Map<string, BaseCompletionProvider> = new Map();
-Providers.set(IfArchProvider.name, new IfArchProvider());
+export const providers: Map<string, BaseCompletionProvider> = new Map();
+
+export function init(context: vscode.ExtensionContext) {
+    providers.set(IfArchProvider.name, new IfArchProvider(context));
+    return providers;
+}

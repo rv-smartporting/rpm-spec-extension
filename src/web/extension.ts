@@ -12,36 +12,40 @@
  * Client Entry Point of RPM Spec Plugin
  *
  * Author: Lightning Rainstorm <me@ldby.site>
- * Last Change: Apr 11, 2023
+ * Last Change: Apr 12, 2023
  **************************************************************************************/
 
 import * as vscode from "vscode";
 import { ClientLogger } from "./utils/log";
-import { Providers } from "./completionProviders";
+import * as Providers from "./completionProviders";
 
 export function activate(context: vscode.ExtensionContext) {
     ClientLogger.init(context);
+    Providers.init(context);
 
     vscode.commands.registerCommand("demo-ext.command1", async (...args) => {
         vscode.window.showInformationMessage("command1: " + JSON.stringify(args));
     });
 
-    const provider: vscode.InlineCompletionItemProvider = {
-        async provideInlineCompletionItems(document, position, context, token) {
+    const inlineProvider: vscode.InlineCompletionItemProvider = {
+        provideInlineCompletionItems: async function (document, position, context, token) {
             const result: vscode.InlineCompletionList = {
                 items: [],
                 commands: [],
             };
 
-            Providers.forEach(async (provider, providerName) => {
-                const partResult = await provider.handle(document, position, context, token);
+            for (const [providerName, provider] of Providers.providers) {
+                if (!provider.inlineHandler) {
+                    continue;
+                }
+                const partResult = await provider.inlineHandler(document, position, context, token);
                 if (partResult) {
-                    result.items.concat(partResult.items);
+                    result.items = result.items.concat(partResult.items);
                     if (partResult.commands) {
-                        result.commands!.concat(partResult.commands);
+                        result.commands = result.commands!.concat(partResult.commands);
                     }
                 }
-            });
+            }
 
             if (result.items.length > 0) {
                 result.commands!.push({
@@ -59,6 +63,7 @@ export function activate(context: vscode.ExtensionContext) {
 
         /**
          * Is called when an inline completion item was accepted partially.
+         * @param completionItem
          * @param acceptedLength The length of the substring of the inline completion that was accepted already.
          */
         handleDidPartiallyAcceptCompletionItem(
@@ -68,5 +73,27 @@ export function activate(context: vscode.ExtensionContext) {
             console.log("handleDidPartiallyAcceptCompletionItem");
         },
     };
-    vscode.languages.registerInlineCompletionItemProvider({ pattern: "**" }, provider);
+
+    const normalProvider: vscode.CompletionItemProvider = {
+        provideCompletionItems: async function (
+            document: vscode.TextDocument,
+            position: vscode.Position,
+            token: vscode.CancellationToken,
+            context: vscode.CompletionContext
+        ) {
+            let result: vscode.CompletionItem[] = [];
+            for (const [providerName, provider] of Providers.providers) {
+                if (!provider.normalHandler) {
+                    continue;
+                }
+                const partResult = await provider.normalHandler(document, position, context, token);
+                if (partResult) {
+                    result = result.concat(partResult);
+                }
+            }
+            return result;
+        },
+    };
+    // vscode.languages.registerInlineCompletionItemProvider({ pattern: "**" }, inlineProvider);
+    context.subscriptions.push(vscode.languages.registerCompletionItemProvider({ pattern: "**" }, normalProvider, " "));
 }

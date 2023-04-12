@@ -166,7 +166,8 @@
                 {
                     "include": "#archValues"
                 }
-            ]
+            ],
+            "contentName": "invalid.illegal.spec"
         },
         {
             "begin": "%(if)\\b",

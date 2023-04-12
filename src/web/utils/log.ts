@@ -12,7 +12,7 @@
  * Logger of RPM Spec Plugin
  *
  * Author: Lightning Rainstorm <me@ldby.site>
- * Last Change: Apr 11, 2023
+ * Last Change: Apr 12, 2023
  **************************************************************************************/
 
 import * as vscode from "vscode";
@@ -40,6 +40,7 @@ export class ClientLogger {
      * Constructor of Logger
      *
      * @param category Category name
+     * @param level Log level
      */
     private constructor(category: string, level?: LogLevel) {
         // Set default level if not initialized
@@ -72,11 +73,6 @@ export class ClientLogger {
         this.defaultLevel = "info";
         if (logLevel === "verbose") {
             this.defaultLevel = "trace";
-        }
-
-        // Initialize log4js configuration
-        if (context !== undefined) {
-            const logFileUri = context.logUri;
         }
 
         // Initialize output channel

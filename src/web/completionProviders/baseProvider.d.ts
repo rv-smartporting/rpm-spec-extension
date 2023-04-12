@@ -12,12 +12,12 @@
  * Base Completion Provider of RPM Spec Plugin
  *
  * Author: Lightning Rainstorm <me@ldby.site>
- * Last Change: Apr 11, 2023
+ * Last Change: Apr 12, 2023
  **************************************************************************************/
 
 import * as vscode from "vscode";
 
-export interface ProviderHandler {
+export interface InlineProviderHandler {
     (
         document: vscode.TextDocument,
         position: vscode.Position,
@@ -26,11 +26,23 @@ export interface ProviderHandler {
     ): vscode.ProviderResult<vscode.InlineCompletionList>;
 }
 
+export interface NormalProviderHandler {
+    (
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        context: vscode.CompletionContext,
+        token: vscode.CancellationToken
+    ): vscode.ProviderResult<vscode.CompletionItem[]>;
+}
+
 /** Base interface for every completionProvider */
 export interface BaseCompletionProvider {
     /** Provider name */
     name: string;
 
-    /** Provider handler */
-    handle: ProviderHandler;
+    /** Inline Provider Handler */
+    inlineHandler?: InlineProviderHandler;
+
+    /** Normal Provider Handler */
+    normalHandler?: NormalProviderHandler;
 }
