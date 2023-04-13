@@ -24,13 +24,25 @@ export class IfArchProvider implements BaseCompletionProvider {
     public name = "IfArchProvider";
     private _logger: ClientLogger;
 
+    /** Inline 补全条目缓存表 */
     private _cachedInlineItems: vscode.InlineCompletionItem[] = [];
+
+    /** 普通补全条目缓存表 */
     private _cachedNormalItems: vscode.CompletionItem[] = [];
+
+    /** 补全条目键名集合 */
     private _cachedKeys: Set<string> = new Set();
 
+    /**
+     * 构造方法
+     *
+     * @param context 插件上下文
+     */
     public constructor(context: vscode.ExtensionContext) {
         this._logger = ClientLogger.getLogger(this.name);
 
+        // 通过 tmLanguage 加载 archValues 和 archShortcuts 名称列表
+        // 将列表值作为自动补全提示结果
         this._logger.info("Loading rpm spec tmLanguage file...");
         const specLangJsonPath = vscode.Uri.joinPath(context.extensionUri, "resource/rpmspec.tmLanguage.json");
         const specLangJson = JSON.parse(fs.readFileSync(specLangJsonPath.fsPath, { encoding: "utf-8" }));
@@ -58,6 +70,15 @@ export class IfArchProvider implements BaseCompletionProvider {
         this._logger.info("Loaded ".concat(this._cachedInlineItems.length.toString(), " completion items"));
     }
 
+    /**
+     * Inline 补全响应
+     *
+     * @param document TextDocument
+     * @param position 源码位置
+     * @param completionContext Inline 补全上下文
+     * @param token Token 状态
+     * @returns Inline 补全结果
+     */
     public async inlineHandler(
         document: vscode.TextDocument,
         position: vscode.Position,
@@ -81,6 +102,15 @@ export class IfArchProvider implements BaseCompletionProvider {
         return result;
     }
 
+    /**
+     * 普通补全响应
+     *
+     * @param document TextDocument
+     * @param position 源码位置
+     * @param token Token 状态
+     * @param completionContext 普通补全上下文
+     * @returns 普通补全结果
+     */
     public async normalHandler(
         document: vscode.TextDocument,
         position: vscode.Position,

@@ -29,6 +29,9 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.showInformationMessage("command1: " + JSON.stringify(args));
     });
 
+    /**
+     * Inline 补全
+     */
     const inlineProvider: vscode.InlineCompletionItemProvider = {
         provideInlineCompletionItems: async function (document, position, completionContext, token) {
             const result: vscode.InlineCompletionList = {
@@ -49,6 +52,7 @@ export function activate(context: vscode.ExtensionContext) {
                 }
             }
 
+            // Inline 补全可以提供额外的命令
             if (result.items.length > 0) {
                 result.commands!.push({
                     command: "demo-ext.command1",
@@ -64,9 +68,9 @@ export function activate(context: vscode.ExtensionContext) {
         },
 
         /**
-         * Is called when an inline completion item was accepted partially.
-         * @param completionItem
-         * @param acceptedLength The length of the substring of the inline completion that was accepted already.
+         * Inline 补全条目被部分采纳时回调
+         * @param completionItem Inline 补全条目
+         * @param acceptedLength 已接受的 Inline 补全条目长度
          */
         handleDidPartiallyAcceptCompletionItem(
             completionItem: vscode.InlineCompletionItem,
@@ -76,6 +80,9 @@ export function activate(context: vscode.ExtensionContext) {
         },
     };
 
+    /**
+     * 普通补全
+     */
     const normalProvider: vscode.CompletionItemProvider = {
         provideCompletionItems: async function (
             document: vscode.TextDocument,
@@ -97,6 +104,9 @@ export function activate(context: vscode.ExtensionContext) {
         },
     };
 
+    /**
+     * 定义追踪
+     */
     const definitionProvider: vscode.DefinitionProvider = {
         provideDefinition: async function (
             document: vscode.TextDocument,
@@ -117,6 +127,9 @@ export function activate(context: vscode.ExtensionContext) {
         },
     };
 
+    /**
+     * 引用追踪
+     */
     const referenceProvider: vscode.ReferenceProvider = {
         provideReferences: async function (
             document: vscode.TextDocument,
@@ -138,6 +151,9 @@ export function activate(context: vscode.ExtensionContext) {
         },
     };
 
+    /**
+     * 对启动时已打开的文档，触发一次定义/引用追踪器的文档被打开方法
+     */
     for (const doc of vscode.workspace.textDocuments) {
         if (doc.languageId === "rpmspec") {
             for (const [providerName, provider] of DefRefProviders.providers) {
@@ -146,8 +162,9 @@ export function activate(context: vscode.ExtensionContext) {
         }
     }
 
-    // vscode.languages.registerInlineCompletionItemProvider({ pattern: "**" }, inlineProvider);
     context.subscriptions.push(
+        // 暂时禁用 Inline 补全
+        // vscode.languages.registerInlineCompletionItemProvider({ pattern: "**" }, inlineProvider),
         vscode.languages.registerCompletionItemProvider({ pattern: "rpmspec" }, normalProvider, " "),
         vscode.languages.registerDefinitionProvider({ language: "rpmspec" }, definitionProvider),
         vscode.languages.registerReferenceProvider({ language: "rpmspec" }, referenceProvider),

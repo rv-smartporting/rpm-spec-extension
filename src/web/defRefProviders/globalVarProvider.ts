@@ -9,7 +9,7 @@
  * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
  * See the Mulan PSL v2 for more details.
  *
- * Global Variable Definition Provider of RPM Spec Plugin
+ * Global Variable Definition / Reference Provider of RPM Spec Plugin
  *
  * Author: Lightning Rainstorm <me@ldby.site>
  * Last Change: Apr 13, 2023
@@ -19,23 +19,43 @@ import * as vscode from "vscode";
 import { BaseDefinitionProvider } from "./baseProvider";
 import { ClientLogger } from "../utils/log";
 
+/** 全局变量定义/使用追踪 */
 export class GlobalVarDefinitionProvider implements BaseDefinitionProvider {
     public name = "GlobalVarDefinitionProvider";
     private _logger: ClientLogger;
+
+    /** 定义索引缓存 */
     private _cachedDefMap: Map<string, Map<string, vscode.DefinitionLink[]>>;
+
+    /** 使用索引缓存 */
     private _cachedRefMap: Map<string, Map<string, vscode.Location[]>>;
 
+    /**
+     * 构造方法
+     *
+     * @param context 插件 Context
+     */
     public constructor(context: vscode.ExtensionContext) {
         this._logger = ClientLogger.getLogger(this.name);
         this._cachedDefMap = new Map();
         this._cachedRefMap = new Map();
     }
 
+    /**
+     * 打开文件时构建定义-使用索引
+     *
+     * @param document TextDocument
+     */
     public onDocumentOpen(document: vscode.TextDocument) {
         this._buildDefMap(document);
         this._buildRefMap(document);
     }
 
+    /**
+     * 构建使用索引
+     *
+     * @param document TextDocument
+     */
     private _buildRefMap(document: vscode.TextDocument) {
         const docText = document.getText();
         const refMap: Map<string, vscode.Location[]> = new Map();
@@ -75,6 +95,11 @@ export class GlobalVarDefinitionProvider implements BaseDefinitionProvider {
         this._logger.info("Finished building reference map, count: ".concat(refMap.size.toString()));
     }
 
+    /**
+     * 构建定义索引
+     *
+     * @param document TextDocument
+     */
     private _buildDefMap(document: vscode.TextDocument) {
         const docText = document.getText();
         const defMap: Map<string, vscode.DefinitionLink[]> = new Map();
@@ -112,6 +137,14 @@ export class GlobalVarDefinitionProvider implements BaseDefinitionProvider {
         this._logger.info("Finished building definition map, count: ".concat(defMap.size.toString()));
     }
 
+    /**
+     * 定义追踪响应
+     *
+     * @param document TextDocument
+     * @param position 源码位置
+     * @param token Token 状态
+     * @returns 定义追踪结果
+     */
     public async defHandler(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) {
         if (!this._cachedDefMap.has(document.uri.toString())) {
             this._buildDefMap(document);
@@ -124,6 +157,15 @@ export class GlobalVarDefinitionProvider implements BaseDefinitionProvider {
         return undefined;
     }
 
+    /**
+     * 使用追踪响应
+     *
+     * @param document TextDocument
+     * @param position 源码位置
+     * @param refContext 使用上下文
+     * @param token Token 状态
+     * @returns 使用追踪结果
+     */
     public async refHandler(
         document: vscode.TextDocument,
         position: vscode.Position,
