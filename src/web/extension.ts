@@ -17,6 +17,7 @@
 
 import * as CompletionProviders from "./completionProviders";
 import * as DefRefProviders from "./defRefProviders";
+import * as HoverProviders from "./hoverProviders";
 import * as vscode from "vscode";
 import { ClientLogger } from "./utils/log";
 
@@ -24,6 +25,7 @@ export function activate(context: vscode.ExtensionContext) {
     ClientLogger.init(context);
     CompletionProviders.init(context);
     DefRefProviders.init(context);
+    HoverProviders.init(context);
 
     vscode.commands.registerCommand("demo-ext.command1", async (...args) => {
         vscode.window.showInformationMessage("command1: " + JSON.stringify(args));
@@ -151,15 +153,21 @@ export function activate(context: vscode.ExtensionContext) {
         },
     };
 
-    /**
-     * 对启动时已打开的文档，触发一次定义/引用追踪器的文档被打开方法
-     */
-    for (const doc of vscode.workspace.textDocuments) {
-        if (doc.languageId === "rpmspec") {
-            for (const [providerName, provider] of DefRefProviders.providers) {
-                provider.onDocumentOpen?.(doc);
-            }
+    const hoverProviders: vscode.Disposable[] = [];
+    for (const [providerName, provider] of HoverProviders.providers) {
+        if (!provider.handler) {
+            continue;
         }
+        hoverProviders.push(
+            vscode.languages.registerHoverProvider(
+                { language: "rpmspec" },
+                {
+                    provideHover: async function (document, position, token) {
+                        return provider.handler!(document, position, token);
+                    },
+                }
+            )
+        );
     }
 
     context.subscriptions.push(
@@ -176,4 +184,5 @@ export function activate(context: vscode.ExtensionContext) {
             }
         })
     );
+    context.subscriptions.push(...hoverProviders);
 }

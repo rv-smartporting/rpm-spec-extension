@@ -28,6 +28,9 @@ export class GlobalVarDefRefProvider implements BaseDefRefProvider {
     /** 定义索引缓存 */
     private _cachedDefMap: Map<string, Map<string, vscode.DefinitionLink[]>>;
 
+    /** 定义常量值缓存 */
+    private _cachedDefConstMap: Map<string, Map<string, Set<string>>>;
+
     /** 使用索引缓存 */
     private _cachedRefMap: Map<string, Map<string, vscode.Location[]>>;
 
@@ -39,6 +42,7 @@ export class GlobalVarDefRefProvider implements BaseDefRefProvider {
     private constructor(context: vscode.ExtensionContext) {
         this._logger = ClientLogger.getLogger(this.name);
         this._cachedDefMap = new Map();
+        this._cachedDefConstMap = new Map();
         this._cachedRefMap = new Map();
 
         // 对启动时已打开的文档，触发一次定义/引用追踪器的文档被打开方法
@@ -83,7 +87,7 @@ export class GlobalVarDefRefProvider implements BaseDefRefProvider {
     private _buildRefMap(document: vscode.TextDocument) {
         const docText = document.getText();
         const refMap: Map<string, vscode.Location[]> = new Map();
-        const refStmtRes = docText.matchAll(/%{(?<varName>[^}]+)}+/gi);
+        const refStmtRes = docText.matchAll(/%{(?<varName>[^}]+)}/gi);
         for (const res of refStmtRes) {
             const varName = res.groups!["varName"];
             const wordPos = document.positionAt(res.index! + res[0].indexOf(varName));
@@ -127,7 +131,8 @@ export class GlobalVarDefRefProvider implements BaseDefRefProvider {
     private _buildDefMap(document: vscode.TextDocument) {
         const docText = document.getText();
         const defMap: Map<string, vscode.DefinitionLink[]> = new Map();
-        const defStmtRes = docText.matchAll(/%global\s+(?<varName>\S+)\s+/gi);
+        const defConstMap: Map<string, Set<string>> = new Map();
+        const defStmtRes = docText.matchAll(/%global\s+(?<varName>\S+)\s+(?<value>.*)/gi);
         for (const res of defStmtRes) {
             const varName = res.groups!["varName"];
             const wordPos = document.positionAt(res.index! + res[0].indexOf(varName));
@@ -156,9 +161,27 @@ export class GlobalVarDefRefProvider implements BaseDefRefProvider {
             } else {
                 defMap.set(varName, [defLink]);
             }
+
+            // 构建常量值缓存表
+            const value = res.groups!["value"];
+            if (value.match(/^([\w.\s]+)$/)) {
+                let valueSet = defConstMap.get(varName);
+                if (!valueSet) {
+                    valueSet = new Set<string>([value]);
+                    defConstMap.set(varName, valueSet);
+                }
+                valueSet.add(value);
+            }
         }
         this._cachedDefMap.set(document.uri.toString(), defMap);
-        this._logger.info("Finished building definition map, count: ".concat(defMap.size.toString()));
+        this._cachedDefConstMap.set(document.uri.toString(), defConstMap);
+        this._logger.info(
+            "Finished building definition map, count: ".concat(
+                defMap.size.toString(),
+                ", constMapCount: ",
+                defConstMap.size.toString()
+            )
+        );
     }
 
     /**
@@ -176,6 +199,15 @@ export class GlobalVarDefRefProvider implements BaseDefRefProvider {
         const wordMap = this._cachedDefMap.get(document.uri.toString())!;
         const word = document.getText(document.getWordRangeAtPosition(position));
         if (wordMap.has(word)) {
+            const links = wordMap.get(word)!;
+            for (const link of links) {
+                const targetDocument = await vscode.workspace.openTextDocument(link.targetUri);
+                if (targetDocument.getText(link.targetRange) !== word) {
+                    // 目标 range 已不是该单词，说明文档可能发生修改，重建索引表
+                    this._buildDefMap(targetDocument);
+                    return undefined;
+                }
+            }
             return wordMap.get(word)!;
         }
         return undefined;
@@ -202,7 +234,36 @@ export class GlobalVarDefRefProvider implements BaseDefRefProvider {
         const wordMap = this._cachedRefMap.get(document.uri.toString())!;
         const word = document.getText(document.getWordRangeAtPosition(position));
         if (wordMap.has(word)) {
-            return wordMap.get(word)!;
+            const links = wordMap.get(word)!;
+            for (const link of links) {
+                const targetDocument = await vscode.workspace.openTextDocument(link.uri);
+                if (targetDocument.getText(link.range) !== word) {
+                    // 目标 range 已不是该单词，说明文档可能发生修改，重建索引表
+                    this._buildRefMap(targetDocument);
+                    return undefined;
+                }
+            }
+            return links;
+        }
+        return undefined;
+    }
+
+    /**
+     * 获取某个全局变量定义中的常量值
+     *
+     * @param document TextDocument
+     * @param varName 变量名
+     * @returns 常量值列表（若没有，返回 undefined）
+     */
+    public getDefConstValues(document: vscode.TextDocument, varName: string): string[] | undefined {
+        if (!this._cachedDefConstMap.has(document.uri.toString())) {
+            this._buildDefMap(document);
+        }
+        const defConstMap = this._cachedDefConstMap.get(document.uri.toString())!;
+
+        if (defConstMap.has(varName)) {
+            const values = [...defConstMap.get(varName)!.values()];
+            return values.sort();
         }
         return undefined;
     }
