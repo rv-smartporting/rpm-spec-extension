@@ -7,8 +7,11 @@
         "spec"
     ],
     "version": "0.0.1",
-    "publisher": "tcse-iscas",
-    "repository": "https://gitee.com/rvsmart-porting/rpm-spec-plugin",
+    "publisher": "RVSmartPorting",
+    "repository": {
+        "type": "git",
+        "url": "https://gitee.com/rvsmart-porting/rpm-spec-plugin"
+    },
     "engines": {
         "vscode": "^1.74.0"
     },
