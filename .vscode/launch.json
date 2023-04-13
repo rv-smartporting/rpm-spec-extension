@@ -23,7 +23,7 @@
                 "--extensionDevelopmentPath=${workspaceFolder}",
                 "--disable-extensions",
                 "--enable-proposed-api",
-                "tcse-iscas.rpm-spec-plugin",
+                "tcse-iscas.rpm-spec-ext",
                 "${workspaceFolder}/testRoot"
             ],
             "outFiles": ["${workspaceFolder}/out/**/*.js"],
@@ -40,7 +40,7 @@
                 "--extensionDevelopmentPath=${workspaceFolder}",
                 "--disable-extensions",
                 "--enable-proposed-api",
-                "tcse-iscas.rpm-spec-plugin",
+                "tcse-iscas.rpm-spec-ext",
                 "${workspaceFolder}/testRoot"
             ],
             "outFiles": ["${workspaceFolder}/dist/**/*.js"],

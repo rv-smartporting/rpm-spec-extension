@@ -1,7 +1,7 @@
 {
-    "name": "rpm-spec-plugin",
-    "displayName": "%rpm-spec-plugin.package.displayName%",
-    "description": "%rpm-spec-plugin.package.description%",
+    "name": "rpm-spec-ext",
+    "displayName": "%rpm-spec-ext.package.displayName%",
+    "description": "%rpm-spec-ext.package.description%",
     "keywords": [
         "rpm",
         "spec"
@@ -10,7 +10,7 @@
     "publisher": "RVSmartPorting",
     "repository": {
         "type": "git",
-        "url": "https://gitee.com/rvsmart-porting/rpm-spec-plugin"
+        "url": "https://gitee.com/rvsmart-porting/rpm-spec-extension"
     },
     "engines": {
         "vscode": "^1.74.0"

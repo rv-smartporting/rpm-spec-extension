@@ -1,4 +1,4 @@
 {
-    "rpm-spec-plugin.package.description": "Language Support for RPM Spec",
-    "rpm-spec-plugin.package.displayName": "RPM Spec Language Support"
+    "rpm-spec-ext.package.description": "Language Support for RPM Spec",
+    "rpm-spec-ext.package.displayName": "RPM Spec Language Support"
 }

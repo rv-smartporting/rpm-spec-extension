@@ -1,6 +1,6 @@
 # RPM Spec 语言支持
 
-[官网](https://gitee.com/rvsmart-porting/rpm-spec-plugin) | [English](README.md)
+[官网](https://gitee.com/rvsmart-porting/rpm-spec-extension) | [English](README.md)
 
 本扩展对 RPM Spec 文件提供语言支持，实现了多种为开发者服务的辅助功能。
 
