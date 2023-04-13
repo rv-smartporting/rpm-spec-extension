@@ -28,19 +28,6 @@
         "inlineCompletionsAdditions"
     ],
     "contributes": {
-        "commands": [
-            {
-                "command": "extension.inline-completion-settings",
-                "title": "My Inline Completion Demo Settings"
-            }
-        ],
-        "menus": {
-            "editor/inlineCompletions/actions": [
-                {
-                    "command": "extension.inline-completion-settings"
-                }
-            ]
-        },
         "languages": [
             {
                 "id": "rpmspec",
