@@ -1,7 +1,7 @@
 {
     "name": "rpm-spec-plugin",
-    "displayName": "RPM Spec Language Support",
-    "description": "Language Support for RPM Spec",
+    "displayName": "%rpm-spec-plugin.package.displayName%",
+    "description": "%rpm-spec-plugin.package.description%",
     "keywords": [
         "rpm",
         "spec"
