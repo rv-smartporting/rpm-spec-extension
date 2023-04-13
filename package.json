@@ -10,7 +10,7 @@
     "publisher": "RVSmartPorting",
     "repository": {
         "type": "git",
-        "url": "https://gitee.com/rvsmart-porting/rpm-spec-extension"
+        "url": "https://github.com/rv-smartporting/rpm-spec-extension"
     },
     "engines": {
         "vscode": "^1.74.0"
@@ -24,9 +24,6 @@
     "main": "./out/web/extension.js",
     "browser": "./dist/web/extension.js",
     "l10n": "./l10n",
-    "enabledApiProposals": [
-        "inlineCompletionsAdditions"
-    ],
     "contributes": {
         "languages": [
             {
