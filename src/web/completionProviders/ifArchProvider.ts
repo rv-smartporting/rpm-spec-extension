@@ -15,7 +15,6 @@
  * Last Change: Apr 12, 2023
  **************************************************************************************/
 
-import * as fs from "fs";
 import * as vscode from "vscode";
 import { BaseCompletionProvider } from "./baseProvider";
 import { ClientLogger } from "../utils/log";
@@ -46,29 +45,33 @@ export class IfArchProvider implements BaseCompletionProvider {
         // 将列表值作为自动补全提示结果
         this._logger.info("Loading rpm spec tmLanguage file...");
         const specLangJsonPath = vscode.Uri.joinPath(context.extensionUri, "resource/rpmspec.tmLanguage.json");
-        const specLangJson = JSON.parse(fs.readFileSync(specLangJsonPath.fsPath, { encoding: "utf-8" }));
-        let archValues: string = specLangJson.repository.archValues.match;
-        let archShortcuts: string = specLangJson.repository.archShortcuts.match;
-        archValues = archValues.substring(3, archValues.length - 3);
-        archShortcuts = archShortcuts.substring(4, archShortcuts.length - 3);
-        for (const archValue of archValues.split("|")) {
-            if (this._cachedKeys.has(archValue)) {
-                continue;
+        vscode.workspace.fs.readFile(specLangJsonPath).then((jsonContent) => {
+            const specLangJson = JSON.parse(new TextDecoder().decode(jsonContent));
+            let archValues: string = specLangJson.repository.archValues.match;
+            let archShortcuts: string = specLangJson.repository.archShortcuts.match;
+            archValues = archValues.substring(3, archValues.length - 3);
+            archShortcuts = archShortcuts.substring(4, archShortcuts.length - 3);
+            for (const archValue of archValues.split("|")) {
+                if (this._cachedKeys.has(archValue)) {
+                    continue;
+                }
+                this._cachedKeys.add(archValue);
+                this._cachedInlineItems.push(new vscode.InlineCompletionItem(archValue));
+                this._cachedNormalItems.push(new vscode.CompletionItem(archValue, vscode.CompletionItemKind.Class));
             }
-            this._cachedKeys.add(archValue);
-            this._cachedInlineItems.push(new vscode.InlineCompletionItem(archValue));
-            this._cachedNormalItems.push(new vscode.CompletionItem(archValue, vscode.CompletionItemKind.Class));
-        }
-        for (const archShortcutInner of archShortcuts.split("|")) {
-            const archShortcut = "%{".concat(archShortcutInner, "}");
-            if (this._cachedKeys.has(archShortcut)) {
-                continue;
+            for (const archShortcutInner of archShortcuts.split("|")) {
+                const archShortcut = "%{".concat(archShortcutInner, "}");
+                if (this._cachedKeys.has(archShortcut)) {
+                    continue;
+                }
+                this._cachedKeys.add(archShortcut);
+                this._cachedInlineItems.push(new vscode.InlineCompletionItem(archShortcut));
+                this._cachedNormalItems.push(
+                    new vscode.CompletionItem(archShortcut, vscode.CompletionItemKind.Constant)
+                );
             }
-            this._cachedKeys.add(archShortcut);
-            this._cachedInlineItems.push(new vscode.InlineCompletionItem(archShortcut));
-            this._cachedNormalItems.push(new vscode.CompletionItem(archShortcut, vscode.CompletionItemKind.Constant));
-        }
-        this._logger.info("Loaded ".concat(this._cachedInlineItems.length.toString(), " completion items"));
+            this._logger.info("Loaded ".concat(this._cachedInlineItems.length.toString(), " completion items"));
+        });
     }
 
     /**
