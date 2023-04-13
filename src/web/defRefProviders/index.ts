@@ -16,12 +16,12 @@
  **************************************************************************************/
 
 import * as vscode from "vscode";
-import { BaseDefinitionProvider } from "./baseProvider";
+import { BaseDefRefProvider } from "./baseProvider";
 import { GlobalVarDefinitionProvider } from "./globalVarProvider";
 
-export const providers: Map<string, BaseDefinitionProvider> = new Map();
+export const providers: Map<string, BaseDefRefProvider> = new Map();
 
 export function init(context: vscode.ExtensionContext) {
-    providers.set(GlobalVarDefinitionProvider.name, new GlobalVarDefinitionProvider(context));
+    providers.set(GlobalVarDefinitionProvider.name, GlobalVarDefinitionProvider.getInstance(context));
     return providers;
 }

@@ -23,6 +23,7 @@ import { ClientLogger } from "../utils/log";
 export class IfArchProvider implements BaseCompletionProvider {
     public name = "IfArchProvider";
     private _logger: ClientLogger;
+    private static _instance?: IfArchProvider;
 
     /** Inline 补全条目缓存表 */
     private _cachedInlineItems: vscode.InlineCompletionItem[] = [];
@@ -34,11 +35,11 @@ export class IfArchProvider implements BaseCompletionProvider {
     private _cachedKeys: Set<string> = new Set();
 
     /**
-     * 构造方法
+     * 单例构造方法
      *
      * @param context 插件上下文
      */
-    public constructor(context: vscode.ExtensionContext) {
+    private constructor(context: vscode.ExtensionContext) {
         this._logger = ClientLogger.getLogger(this.name);
 
         // 通过 tmLanguage 加载 archValues 和 archShortcuts 名称列表
@@ -68,6 +69,22 @@ export class IfArchProvider implements BaseCompletionProvider {
             this._cachedNormalItems.push(new vscode.CompletionItem(archShortcut, vscode.CompletionItemKind.Constant));
         }
         this._logger.info("Loaded ".concat(this._cachedInlineItems.length.toString(), " completion items"));
+    }
+
+    /**
+     * 获取单例
+     *
+     * @param context 插件 Context
+     * @returns
+     */
+    public static getInstance(context?: vscode.ExtensionContext) {
+        if (!IfArchProvider._instance) {
+            if (!context) {
+                throw new TypeError("IfArchProvider instance has not been created");
+            }
+            IfArchProvider._instance = new IfArchProvider(context);
+        }
+        return IfArchProvider._instance;
     }
 
     /**

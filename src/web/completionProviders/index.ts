@@ -22,6 +22,6 @@ import { IfArchProvider } from "./ifArchProvider";
 export const providers: Map<string, BaseCompletionProvider> = new Map();
 
 export function init(context: vscode.ExtensionContext) {
-    providers.set(IfArchProvider.name, new IfArchProvider(context));
+    providers.set(IfArchProvider.name, IfArchProvider.getInstance(context));
     return providers;
 }

@@ -16,13 +16,14 @@
  **************************************************************************************/
 
 import * as vscode from "vscode";
-import { BaseDefinitionProvider } from "./baseProvider";
+import { BaseDefRefProvider } from "./baseProvider";
 import { ClientLogger } from "../utils/log";
 
 /** 全局变量定义/使用追踪 */
-export class GlobalVarDefinitionProvider implements BaseDefinitionProvider {
+export class GlobalVarDefinitionProvider implements BaseDefRefProvider {
     public name = "GlobalVarDefinitionProvider";
     private _logger: ClientLogger;
+    private static _instance?: GlobalVarDefinitionProvider;
 
     /** 定义索引缓存 */
     private _cachedDefMap: Map<string, Map<string, vscode.DefinitionLink[]>>;
@@ -31,14 +32,37 @@ export class GlobalVarDefinitionProvider implements BaseDefinitionProvider {
     private _cachedRefMap: Map<string, Map<string, vscode.Location[]>>;
 
     /**
-     * 构造方法
+     * 单例构造方法
      *
-     * @param context 插件 Context
+     * @param context 插件上下文
      */
-    public constructor(context: vscode.ExtensionContext) {
+    private constructor(context: vscode.ExtensionContext) {
         this._logger = ClientLogger.getLogger(this.name);
         this._cachedDefMap = new Map();
         this._cachedRefMap = new Map();
+
+        // 对启动时已打开的文档，触发一次定义/引用追踪器的文档被打开方法
+        for (const doc of vscode.workspace.textDocuments) {
+            if (doc.languageId === "rpmspec") {
+                this.onDocumentOpen(doc);
+            }
+        }
+    }
+
+    /**
+     * 获取单例
+     *
+     * @param context 插件 Context
+     * @returns
+     */
+    public static getInstance(context?: vscode.ExtensionContext) {
+        if (!GlobalVarDefinitionProvider._instance) {
+            if (!context) {
+                throw new TypeError("GlobalVarDefinitionProvider instance has not been created");
+            }
+            GlobalVarDefinitionProvider._instance = new GlobalVarDefinitionProvider(context);
+        }
+        return GlobalVarDefinitionProvider._instance;
     }
 
     /**

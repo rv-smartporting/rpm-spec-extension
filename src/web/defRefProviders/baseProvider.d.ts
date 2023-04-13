@@ -32,8 +32,8 @@ export interface ReferenceProviderHandler {
     ): vscode.ProviderResult<vscode.Location[]>;
 }
 
-/** Base interface for every definitionProvider */
-export interface BaseDefinitionProvider {
+/** Base interface for every definition / reference provider */
+export interface BaseDefRefProvider {
     /** Provider name */
     name: string;
 
