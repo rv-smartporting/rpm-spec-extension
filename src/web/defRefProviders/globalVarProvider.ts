@@ -20,10 +20,10 @@ import { BaseDefRefProvider } from "./baseProvider";
 import { ClientLogger } from "../utils/log";
 
 /** 全局变量定义/使用追踪 */
-export class GlobalVarDefinitionProvider implements BaseDefRefProvider {
+export class GlobalVarDefRefProvider implements BaseDefRefProvider {
     public name = "GlobalVarDefinitionProvider";
     private _logger: ClientLogger;
-    private static _instance?: GlobalVarDefinitionProvider;
+    private static _instance?: GlobalVarDefRefProvider;
 
     /** 定义索引缓存 */
     private _cachedDefMap: Map<string, Map<string, vscode.DefinitionLink[]>>;
@@ -56,13 +56,13 @@ export class GlobalVarDefinitionProvider implements BaseDefRefProvider {
      * @returns
      */
     public static getInstance(context?: vscode.ExtensionContext) {
-        if (!GlobalVarDefinitionProvider._instance) {
+        if (!GlobalVarDefRefProvider._instance) {
             if (!context) {
                 throw new TypeError("GlobalVarDefinitionProvider instance has not been created");
             }
-            GlobalVarDefinitionProvider._instance = new GlobalVarDefinitionProvider(context);
+            GlobalVarDefRefProvider._instance = new GlobalVarDefRefProvider(context);
         }
-        return GlobalVarDefinitionProvider._instance;
+        return GlobalVarDefRefProvider._instance;
     }
 
     /**

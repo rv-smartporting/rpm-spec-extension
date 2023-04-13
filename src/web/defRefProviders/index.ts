@@ -17,11 +17,11 @@
 
 import * as vscode from "vscode";
 import { BaseDefRefProvider } from "./baseProvider";
-import { GlobalVarDefinitionProvider } from "./globalVarProvider";
+import { GlobalVarDefRefProvider } from "./globalVarProvider";
 
 export const providers: Map<string, BaseDefRefProvider> = new Map();
 
 export function init(context: vscode.ExtensionContext) {
-    providers.set(GlobalVarDefinitionProvider.name, GlobalVarDefinitionProvider.getInstance(context));
+    providers.set(GlobalVarDefRefProvider.name, GlobalVarDefRefProvider.getInstance(context));
     return providers;
 }
