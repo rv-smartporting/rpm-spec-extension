@@ -60,6 +60,7 @@
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",
+        "vscode:package": "vsce package",
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
         "compile-web": "webpack",
@@ -78,6 +79,7 @@
         "@typescript-eslint/parser": "^5.42.0",
         "@vscode/l10n-dev": "^0.0.24",
         "@vscode/test-web": "^0.0.41",
+        "@vscode/vsce": "^2.19.0",
         "eslint": "^8.26.0",
         "process": "^0.11.10",
         "ts-loader": "^9.4.2",
