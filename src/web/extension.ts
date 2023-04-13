@@ -173,7 +173,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         // 暂时禁用 Inline 补全
         // vscode.languages.registerInlineCompletionItemProvider({ pattern: "**" }, inlineProvider),
-        vscode.languages.registerCompletionItemProvider({ pattern: "rpmspec" }, normalProvider, " "),
+        vscode.languages.registerCompletionItemProvider({ language: "rpmspec" }, normalProvider, " "),
         vscode.languages.registerDefinitionProvider({ language: "rpmspec" }, definitionProvider),
         vscode.languages.registerReferenceProvider({ language: "rpmspec" }, referenceProvider),
         vscode.workspace.onDidOpenTextDocument((doc) => {
