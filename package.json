@@ -1,12 +1,12 @@
 {
     "name": "rpm-spec-ext",
-    "displayName": "%rpm-spec-ext.package.displayName%",
-    "description": "%rpm-spec-ext.package.description%",
+    "displayName": "RPM Spec Language Support",
+    "description": "Language Support for RPM Spec",
     "keywords": [
         "rpm",
         "spec"
     ],
-    "version": "0.0.1",
+    "version": "0.0.2",
     "publisher": "RVSmartPorting",
     "repository": {
         "type": "git",
