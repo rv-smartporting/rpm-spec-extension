@@ -204,11 +204,11 @@
         {
             "begin": "%\\{",
             "end": "\\}",
-            "name": "variable.other.spec"
+            "name": "variable.name.spec"
         },
         {
             "match": "%([A-Za-z0-9_]+)",
-            "name": "variable.other.spec"
+            "name": "keyword.spec"
         },
         {
             "match": "^\\s*#.*$",
@@ -251,7 +251,7 @@
                 },
                 {
                     "match": "([\\w]+)",
-                    "name": "variable.language"
+                    "name": "variable.name.spec"
                 },
                 {
                     "match": "(:)([\\w]+)",
