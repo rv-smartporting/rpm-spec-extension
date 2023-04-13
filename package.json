@@ -20,6 +20,7 @@
     ],
     "main": "./out/web/extension.js",
     "browser": "./dist/web/extension.js",
+    "l10n": "./l10n",
     "enabledApiProposals": [
         "inlineCompletionsAdditions"
     ],
@@ -66,7 +67,8 @@
         "run-in-browser": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=. ./testRoot",
         "lint": "eslint \"src/**/*.ts\"",
         "download-api": "vscode-dts dev",
-        "postinstall": "npm run download-api"
+        "postinstall": "npm run download-api",
+        "extract_l10n": "npx @vscode/l10n-dev export -o ./l10n ./src/web/** && python ./scripts/merge_l10n.py"
     },
     "devDependencies": {
         "@types/node": "^16.18.23",
@@ -74,6 +76,7 @@
         "@types/webpack-env": "^1.18.0",
         "@typescript-eslint/eslint-plugin": "^5.42.0",
         "@typescript-eslint/parser": "^5.42.0",
+        "@vscode/l10n-dev": "^0.0.24",
         "@vscode/test-web": "^0.0.41",
         "eslint": "^8.26.0",
         "process": "^0.11.10",
