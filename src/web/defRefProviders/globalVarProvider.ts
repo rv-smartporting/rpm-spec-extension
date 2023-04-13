@@ -34,6 +34,9 @@ export class GlobalVarDefRefProvider implements BaseDefRefProvider {
     /** 使用索引缓存 */
     private _cachedRefMap: Map<string, Map<string, vscode.Location[]>>;
 
+    /** 文档版本号索引 */
+    private _versionMap: Map<string, number>;
+
     /**
      * 单例构造方法
      *
@@ -44,6 +47,7 @@ export class GlobalVarDefRefProvider implements BaseDefRefProvider {
         this._cachedDefMap = new Map();
         this._cachedDefConstMap = new Map();
         this._cachedRefMap = new Map();
+        this._versionMap = new Map();
 
         // 对启动时已打开的文档，触发一次定义/引用追踪器的文档被打开方法
         for (const doc of vscode.workspace.textDocuments) {
@@ -77,6 +81,14 @@ export class GlobalVarDefRefProvider implements BaseDefRefProvider {
     public onDocumentOpen(document: vscode.TextDocument) {
         this._buildDefMap(document);
         this._buildRefMap(document);
+        this._versionMap.set(document.uri.toString(), document.version);
+    }
+
+    private _checkDocumentVersion(document: vscode.TextDocument) {
+        const currVer = this._versionMap.get(document.uri.toString());
+        if (currVer !== document.version) {
+            this.onDocumentOpen(document);
+        }
     }
 
     /**
@@ -193,9 +205,7 @@ export class GlobalVarDefRefProvider implements BaseDefRefProvider {
      * @returns 定义追踪结果
      */
     public async defHandler(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) {
-        if (!this._cachedDefMap.has(document.uri.toString())) {
-            this._buildDefMap(document);
-        }
+        this._checkDocumentVersion(document);
         const wordMap = this._cachedDefMap.get(document.uri.toString())!;
         const word = document.getText(document.getWordRangeAtPosition(position));
         if (wordMap.has(word)) {
@@ -228,9 +238,7 @@ export class GlobalVarDefRefProvider implements BaseDefRefProvider {
         refContext: vscode.ReferenceContext,
         token: vscode.CancellationToken
     ) {
-        if (!this._cachedRefMap.has(document.uri.toString())) {
-            this._buildRefMap(document);
-        }
+        this._checkDocumentVersion(document);
         const wordMap = this._cachedRefMap.get(document.uri.toString())!;
         const word = document.getText(document.getWordRangeAtPosition(position));
         if (wordMap.has(word)) {
@@ -256,9 +264,7 @@ export class GlobalVarDefRefProvider implements BaseDefRefProvider {
      * @returns 常量值列表（若没有，返回 undefined）
      */
     public getDefConstValues(document: vscode.TextDocument, varName: string): string[] | undefined {
-        if (!this._cachedDefConstMap.has(document.uri.toString())) {
-            this._buildDefMap(document);
-        }
+        this._checkDocumentVersion(document);
         const defConstMap = this._cachedDefConstMap.get(document.uri.toString())!;
 
         if (defConstMap.has(varName)) {

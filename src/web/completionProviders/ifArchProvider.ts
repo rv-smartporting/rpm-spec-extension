@@ -139,7 +139,7 @@ export class IfArchProvider implements BaseCompletionProvider {
     ) {
         const lineText = document.lineAt(position.line).text;
         if (
-            lineText.trimStart().startsWith("%ifarch") &&
+            (lineText.trimStart().startsWith("%ifarch") || lineText.trimStart().startsWith("%ifnarch")) &&
             position.character > 0 &&
             lineText.at(position.character - 1) === " "
         ) {
