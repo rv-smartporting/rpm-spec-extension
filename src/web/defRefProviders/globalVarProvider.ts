@@ -99,38 +99,43 @@ export class GlobalVarDefRefProvider implements BaseDefRefProvider {
     private _buildRefMap(document: vscode.TextDocument) {
         const docText = document.getText();
         const refMap: Map<string, vscode.Location[]> = new Map();
-        const refStmtRes = docText.matchAll(/%{(?<varName>[^}]+)}/gi);
-        for (const res of refStmtRes) {
-            const varName = res.groups!["varName"];
-            const wordPos = document.positionAt(res.index! + res[0].indexOf(varName));
 
-            // 忽略注释
-            if (document.lineAt(wordPos.line).text.trimStart().startsWith("#")) {
-                continue;
-            }
+        const visitRes = (stmtRes: IterableIterator<RegExpMatchArray>) => {
+            for (const res of stmtRes) {
+                const varName = res.groups!["varName"];
+                const wordPos = document.positionAt(res.index! + res[0].indexOf(varName));
 
-            const wordRange = document.getWordRangeAtPosition(wordPos);
-            if (!wordRange) {
-                continue;
+                // 忽略注释
+                if (document.lineAt(wordPos.line).text.trimStart().startsWith("#")) {
+                    continue;
+                }
+
+                const wordRange = document.getWordRangeAtPosition(wordPos);
+                if (!wordRange) {
+                    continue;
+                }
+                // 额外检查 wordRange 内对应的 word 是否与 varName 相等
+                if (document.getText(wordRange) !== varName) {
+                    this._logger.error(
+                        "refStmt wordRange word not equals to varName! word: ".concat(
+                            document.getText(wordRange),
+                            ", varName: ",
+                            varName
+                        )
+                    );
+                    continue;
+                }
+                const refLoc = new vscode.Location(document.uri, wordRange);
+                if (refMap.has(varName)) {
+                    refMap.get(varName)!.push(refLoc);
+                } else {
+                    refMap.set(varName, [refLoc]);
+                }
             }
-            // 额外检查 wordRange 内对应的 word 是否与 varName 相等
-            if (document.getText(wordRange) !== varName) {
-                this._logger.error(
-                    "refStmt wordRange word not equals to varName! word: ".concat(
-                        document.getText(wordRange),
-                        ", varName: ",
-                        varName
-                    )
-                );
-                continue;
-            }
-            const refLoc = new vscode.Location(document.uri, wordRange);
-            if (refMap.has(varName)) {
-                refMap.get(varName)!.push(refLoc);
-            } else {
-                refMap.set(varName, [refLoc]);
-            }
-        }
+        };
+        visitRes(docText.matchAll(/%{(?<varName>[^}]+)}/gi));
+        visitRes(docText.matchAll(/%undefine\s+(?<varName>[\S]+)/gi));
+
         this._cachedRefMap.set(document.uri.toString(), refMap);
         this._logger.info("Finished building reference map, count: ".concat(refMap.size.toString()));
     }
