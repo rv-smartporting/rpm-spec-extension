@@ -17,7 +17,7 @@
 
 import * as vscode from "vscode";
 
-export interface InlineProviderHandler {
+export interface InlineDefinitionProviderHandler {
     (
         document: vscode.TextDocument,
         position: vscode.Position,
@@ -26,12 +26,12 @@ export interface InlineProviderHandler {
     ): vscode.ProviderResult<vscode.InlineCompletionList>;
 }
 
-export interface NormalProviderHandler {
+export interface NormalDefinitionProviderHandler {
     (
         document: vscode.TextDocument,
         position: vscode.Position,
-        context: vscode.CompletionContext,
-        token: vscode.CancellationToken
+        token: vscode.CancellationToken,
+        context: vscode.CompletionContext
     ): vscode.ProviderResult<vscode.CompletionItem[]>;
 }
 
@@ -41,8 +41,8 @@ export interface BaseCompletionProvider {
     name: string;
 
     /** Inline Provider Handler */
-    inlineHandler?: InlineProviderHandler;
+    inlineHandler?: InlineDefinitionProviderHandler;
 
     /** Normal Provider Handler */
-    normalHandler?: NormalProviderHandler;
+    normalHandler?: NormalDefinitionProviderHandler;
 }

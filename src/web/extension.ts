@@ -15,30 +15,31 @@
  * Last Change: Apr 12, 2023
  **************************************************************************************/
 
+import * as CompletionProviders from "./completionProviders";
+import * as DefinitionProviders from "./definitionProviders";
 import * as vscode from "vscode";
 import { ClientLogger } from "./utils/log";
-import * as Providers from "./completionProviders";
 
 export function activate(context: vscode.ExtensionContext) {
     ClientLogger.init(context);
-    Providers.init(context);
+    CompletionProviders.init(context);
 
     vscode.commands.registerCommand("demo-ext.command1", async (...args) => {
         vscode.window.showInformationMessage("command1: " + JSON.stringify(args));
     });
 
     const inlineProvider: vscode.InlineCompletionItemProvider = {
-        provideInlineCompletionItems: async function (document, position, context, token) {
+        provideInlineCompletionItems: async function (document, position, completionContext, token) {
             const result: vscode.InlineCompletionList = {
                 items: [],
                 commands: [],
             };
 
-            for (const [providerName, provider] of Providers.providers) {
+            for (const [providerName, provider] of CompletionProviders.providers) {
                 if (!provider.inlineHandler) {
                     continue;
                 }
-                const partResult = await provider.inlineHandler(document, position, context, token);
+                const partResult = await provider.inlineHandler(document, position, completionContext, token);
                 if (partResult) {
                     result.items = result.items.concat(partResult.items);
                     if (partResult.commands) {
@@ -79,14 +80,34 @@ export function activate(context: vscode.ExtensionContext) {
             document: vscode.TextDocument,
             position: vscode.Position,
             token: vscode.CancellationToken,
-            context: vscode.CompletionContext
+            completionContext: vscode.CompletionContext
         ) {
             let result: vscode.CompletionItem[] = [];
-            for (const [providerName, provider] of Providers.providers) {
+            for (const [providerName, provider] of CompletionProviders.providers) {
                 if (!provider.normalHandler) {
                     continue;
                 }
-                const partResult = await provider.normalHandler(document, position, context, token);
+                const partResult = await provider.normalHandler(document, position, token, completionContext);
+                if (partResult) {
+                    result = result.concat(partResult);
+                }
+            }
+            return result;
+        },
+    };
+
+    const definitionProvider: vscode.DefinitionProvider = {
+        provideDefinition: async function (
+            document: vscode.TextDocument,
+            position: vscode.Position,
+            token: vscode.CancellationToken
+        ) {
+            let result: vscode.DefinitionLink[] = [];
+            for (const [providerName, provider] of DefinitionProviders.providers) {
+                if (!provider.handler) {
+                    continue;
+                }
+                const partResult = await provider.handler(document, position, token);
                 if (partResult) {
                     result = result.concat(partResult);
                 }
@@ -95,5 +116,8 @@ export function activate(context: vscode.ExtensionContext) {
         },
     };
     // vscode.languages.registerInlineCompletionItemProvider({ pattern: "**" }, inlineProvider);
-    context.subscriptions.push(vscode.languages.registerCompletionItemProvider({ pattern: "**" }, normalProvider, " "));
+    context.subscriptions.push(
+        vscode.languages.registerCompletionItemProvider({ pattern: "**" }, normalProvider, " "),
+        vscode.languages.registerDefinitionProvider({ pattern: "**" }, definitionProvider)
+    );
 }

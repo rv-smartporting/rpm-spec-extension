@@ -61,7 +61,7 @@ export class IfArchProvider implements BaseCompletionProvider {
     public async inlineHandler(
         document: vscode.TextDocument,
         position: vscode.Position,
-        context: vscode.InlineCompletionContext,
+        completionContext: vscode.InlineCompletionContext,
         token: vscode.CancellationToken
     ) {
         const result: vscode.InlineCompletionList = {
@@ -84,8 +84,8 @@ export class IfArchProvider implements BaseCompletionProvider {
     public async normalHandler(
         document: vscode.TextDocument,
         position: vscode.Position,
-        context: vscode.CompletionContext,
-        token: vscode.CancellationToken
+        token: vscode.CancellationToken,
+        completionContext: vscode.CompletionContext
     ) {
         const lineText = document.lineAt(position.line).text;
         if (
