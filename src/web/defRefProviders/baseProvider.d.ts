@@ -23,11 +23,26 @@ export interface DefinitionProviderHandler {
     >;
 }
 
+export interface ReferenceProviderHandler {
+    (
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        refContext: vscode.ReferenceContext,
+        token: vscode.CancellationToken
+    ): vscode.ProviderResult<vscode.Location[]>;
+}
+
 /** Base interface for every definitionProvider */
 export interface BaseDefinitionProvider {
     /** Provider name */
     name: string;
 
+    /** On Document Open */
+    onDocumentOpen?: (document: vscode.TextDocument) => void;
+
     /** Definition Provider Handler */
-    handler: DefinitionProviderHandler;
+    defHandler?: DefinitionProviderHandler;
+
+    /** Reference Provider Handler */
+    refHandler?: ReferenceProviderHandler;
 }

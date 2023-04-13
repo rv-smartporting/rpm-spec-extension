@@ -16,13 +16,14 @@
  **************************************************************************************/
 
 import * as CompletionProviders from "./completionProviders";
-import * as DefinitionProviders from "./definitionProviders";
+import * as DefRefProviders from "./defRefProviders";
 import * as vscode from "vscode";
 import { ClientLogger } from "./utils/log";
 
 export function activate(context: vscode.ExtensionContext) {
     ClientLogger.init(context);
     CompletionProviders.init(context);
+    DefRefProviders.init(context);
 
     vscode.commands.registerCommand("demo-ext.command1", async (...args) => {
         vscode.window.showInformationMessage("command1: " + JSON.stringify(args));
@@ -103,11 +104,11 @@ export function activate(context: vscode.ExtensionContext) {
             token: vscode.CancellationToken
         ) {
             let result: vscode.DefinitionLink[] = [];
-            for (const [providerName, provider] of DefinitionProviders.providers) {
-                if (!provider.handler) {
+            for (const [providerName, provider] of DefRefProviders.providers) {
+                if (!provider.defHandler) {
                     continue;
                 }
-                const partResult = await provider.handler(document, position, token);
+                const partResult = await provider.defHandler(document, position, token);
                 if (partResult) {
                     result = result.concat(partResult);
                 }
@@ -115,9 +116,47 @@ export function activate(context: vscode.ExtensionContext) {
             return result;
         },
     };
+
+    const referenceProvider: vscode.ReferenceProvider = {
+        provideReferences: async function (
+            document: vscode.TextDocument,
+            position: vscode.Position,
+            refContext: vscode.ReferenceContext,
+            token: vscode.CancellationToken
+        ) {
+            let result: vscode.Location[] = [];
+            for (const [providerName, provider] of DefRefProviders.providers) {
+                if (!provider.refHandler) {
+                    continue;
+                }
+                const partResult = await provider.refHandler(document, position, refContext, token);
+                if (partResult) {
+                    result = result.concat(partResult);
+                }
+            }
+            return result;
+        },
+    };
+
+    for (const doc of vscode.workspace.textDocuments) {
+        if (doc.languageId === "rpmspec") {
+            for (const [providerName, provider] of DefRefProviders.providers) {
+                provider.onDocumentOpen?.(doc);
+            }
+        }
+    }
+
     // vscode.languages.registerInlineCompletionItemProvider({ pattern: "**" }, inlineProvider);
     context.subscriptions.push(
-        vscode.languages.registerCompletionItemProvider({ pattern: "**" }, normalProvider, " "),
-        vscode.languages.registerDefinitionProvider({ pattern: "**" }, definitionProvider)
+        vscode.languages.registerCompletionItemProvider({ pattern: "rpmspec" }, normalProvider, " "),
+        vscode.languages.registerDefinitionProvider({ language: "rpmspec" }, definitionProvider),
+        vscode.languages.registerReferenceProvider({ language: "rpmspec" }, referenceProvider),
+        vscode.workspace.onDidOpenTextDocument((doc) => {
+            if (doc.languageId === "rpmspec") {
+                for (const [providerName, provider] of DefRefProviders.providers) {
+                    provider.onDocumentOpen?.(doc);
+                }
+            }
+        })
     );
 }
