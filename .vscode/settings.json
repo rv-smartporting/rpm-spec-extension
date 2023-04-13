@@ -29,11 +29,23 @@
         "Mulan",
         "prewatch",
         "prismjs",
+        "rpmspec",
         "rvportingtool",
         "RVPT",
         "shiki",
         "tcse",
         "Upto"
+    ],
+    "cSpell.ignorePaths": [
+        "package-lock.json",
+        "node_modules",
+        ".idea",
+        ".git",
+        ".vscode",
+        ".vscode-insiders",
+        ".vscode-test",
+        ".vscode-test-web",
+        "*.spec"
     ],
     "commandOnAllFiles.commands": {
         "Typescript Import Sort": {

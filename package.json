@@ -39,10 +39,10 @@
         },
         "languages": [
             {
-                "id": "RPM Spec",
+                "id": "rpmspec",
                 "aliases": [
                     "spec",
-                    "rpmspec"
+                    "RPM Spec"
                 ],
                 "extensions": [
                     ".spec"
@@ -51,7 +51,7 @@
         ],
         "grammars": [
             {
-                "language": "RPM Spec",
+                "language": "rpmspec",
                 "scopeName": "source.spec",
                 "path": "resource/rpmspec.tmLanguage.json"
             }

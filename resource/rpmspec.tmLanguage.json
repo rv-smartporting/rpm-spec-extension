@@ -53,7 +53,10 @@
             "end": "$",
             "patterns": [
                 {
-                    "include": "#archs"
+                    "include": "#archShortcuts"
+                },
+                {
+                    "include": "#archValues"
                 }
             ]
         },
@@ -160,6 +163,9 @@
             },
             "end": "$",
             "patterns": [
+                {
+                    "include": "#globalVariable"
+                },
                 {
                     "include": "#archShortcuts"
                 },
