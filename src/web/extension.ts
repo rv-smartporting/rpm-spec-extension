@@ -27,9 +27,9 @@ export function activate(context: vscode.ExtensionContext) {
     DefRefProviders.init(context);
     HoverProviders.init(context);
 
-    vscode.commands.registerCommand("demo-ext.command1", async (...args) => {
-        vscode.window.showInformationMessage("command1: " + JSON.stringify(args));
-    });
+    // vscode.commands.registerCommand("demo-ext.command1", async (...args) => {
+    //     vscode.window.showInformationMessage("command1: " + JSON.stringify(args));
+    // });
 
     /**
      * 普通补全
