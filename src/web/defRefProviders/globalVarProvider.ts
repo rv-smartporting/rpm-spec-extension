@@ -133,7 +133,7 @@ export class GlobalVarDefRefProvider implements BaseDefRefProvider {
                 }
             }
         };
-        visitRes(docText.matchAll(/%{(?<varName>[^}]+)}/gi));
+        visitRes(docText.matchAll(/%{(?<varName>[^}\s]+)/gi));
         visitRes(docText.matchAll(/%undefine\s+(?<varName>[\S]+)/gi));
 
         this._cachedRefMap.set(document.uri.toString(), refMap);
@@ -147,10 +147,23 @@ export class GlobalVarDefRefProvider implements BaseDefRefProvider {
      */
     private _buildDefMap(document: vscode.TextDocument) {
         const docText = document.getText();
+        const globalStmtRes = docText.matchAll(/%global\s+(?<varName>\S+)\s+(?<value>.*)/gi);
+        this._buildDefMap_iter(document, globalStmtRes);
+        const defineStmtRes = docText.matchAll(/%define\s+(?<varName>[^\s(]+)[\\(\\)\s]*(?<value>.*)/gi);
+        this._buildDefMap_iter(document, defineStmtRes);
+        this._logger.info(
+            "Finished building definition map, count: ".concat(
+                this._cachedDefMap.size.toString(),
+                ", constMapCount: ",
+                this._cachedDefConstMap.size.toString()
+            )
+        );
+    }
+
+    private _buildDefMap_iter(document: vscode.TextDocument, expRes: RegExpStringIterator<RegExpExecArray>) {
         const defMap: Map<string, vscode.DefinitionLink[]> = new Map();
         const defConstMap: Map<string, Set<string>> = new Map();
-        const defStmtRes = docText.matchAll(/%global\s+(?<varName>\S+)\s+(?<value>.*)/gi);
-        for (const res of defStmtRes) {
+        for (const res of expRes) {
             const varName = res.groups!["varName"];
             const wordPos = document.positionAt(res.index! + res[0].indexOf(varName));
             const wordRange = document.getWordRangeAtPosition(wordPos);
@@ -190,15 +203,31 @@ export class GlobalVarDefRefProvider implements BaseDefRefProvider {
                 valueSet.add(value);
             }
         }
-        this._cachedDefMap.set(document.uri.toString(), defMap);
-        this._cachedDefConstMap.set(document.uri.toString(), defConstMap);
-        this._logger.info(
-            "Finished building definition map, count: ".concat(
-                defMap.size.toString(),
-                ", constMapCount: ",
-                defConstMap.size.toString()
-            )
-        );
+        if (this._cachedDefMap.has(document.uri.toString())) {
+            const currMap = this._cachedDefMap.get(document.uri.toString())!;
+            for (const [key, value] of defMap) {
+                if (currMap.has(key)) {
+                    currMap.get(key)!.push(...value);
+                } else {
+                    currMap.set(key, value);
+                }
+            }
+        } else {
+            this._cachedDefMap.set(document.uri.toString(), defMap);
+        }
+
+        if (this._cachedDefConstMap.has(document.uri.toString())) {
+            const currMap = this._cachedDefConstMap.get(document.uri.toString())!;
+            for (const [key, value] of defConstMap) {
+                if (currMap.has(key)) {
+                    value.forEach((v) => currMap.get(key)!.add(v));
+                } else {
+                    currMap.set(key, value);
+                }
+            }
+        } else {
+            this._cachedDefConstMap.set(document.uri.toString(), defConstMap);
+        }
     }
 
     /**

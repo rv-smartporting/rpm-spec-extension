@@ -61,7 +61,7 @@
             ]
         },
         {
-            "begin": "(Conflicts|Obsoletes|Provides|Requires|Requires\\(.*\\)|Enhances|Suggests|BuildConflicts|BuildRequires|Recommends|PreReq|Supplements):",
+            "begin": "(?i)(Conflicts|Obsoletes|Provides|Requires|Requires\\(.*\\)|Enhances|Suggests|BuildConflicts|BuildRequires|Recommends|PreReq|Supplements):",
             "beginCaptures": {
                 "1": {
                     "name": "keyword.spec"
@@ -89,7 +89,7 @@
             "name": "keyword.spec"
         },
         {
-            "begin": "(Name|Version|Release|Url|URL|Copyright|License|Summary|Summary\\(.*\\)|Distribution|Vendor|Packager|Group|Source\\d*|Patch\\d*|BuildRoot|Prefix):",
+            "begin": "(?i)(Name|Version|Release|Url|URL|Copyright|License|Summary|Summary\\(.*\\)|Distribution|Vendor|Packager|Group|Source\\d*|Patch\\d*|BuildRoot|BuildArch|Prefix):",
             "beginCaptures": {
                 "1": {
                     "name": "keyword.spec"
@@ -137,20 +137,48 @@
             ]
         },
         {
-            "begin": "(%undefine)\\s+([^\\s]+)",
+            "begin": "%(define|undefine)",
             "beginCaptures": {
-                "1": {
+                "0": {
                     "name": "keyword.control.spec"
-                },
-                "2": {
-                    "name": "variable.name.spec"
                 }
             },
             "end": "$",
             "patterns": [
                 {
-                    "match": ".*",
-                    "name": "invalid.illegal.spec"
+                    "begin": "\\s+",
+                    "end": "$",
+                    "patterns": [
+                        {
+                            "begin": "([^\\s(]+)(\\(\\s*\\))",
+                            "beginCaptures": {
+                                "1": {
+                                    "name": "entity.name.function.spec"
+                                },
+                                "2": {
+                                    "name": "punctuation.definition.parameters.spec"
+                                }
+                            },
+                            "end": "$",
+                            "patterns": [
+                                {
+                                    "match": ".*",
+                                    "name": "string.quoted.spec"
+                                }
+                            ]
+                        },
+                        {
+                            "begin": "\\S+",
+                            "end": "$",
+                            "name": "variable.name.spec",
+                            "patterns": [
+                                {
+                                    "match": ".*",
+                                    "name": "string.quoted.spec"
+                                }
+                            ]
+                        }
+                    ]
                 }
             ]
         },
