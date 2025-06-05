@@ -33,3 +33,9 @@ Source0: gcc-%{gccversion}-%{DATE}.tar.xz
     # Ada requires Ada to build
     BuildRequires: gcc-gnat >= %{gccversion}, libgnat >= 3.1
 %endif
+
+#region packages
+%package -n test
+#endregion
+
+# This is another line.
