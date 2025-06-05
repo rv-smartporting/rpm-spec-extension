@@ -5,8 +5,6 @@
 node_modules/**
 scripts/**
 testRoot/**
-.eslintignore
-.eslintrc.js
 .gitignore
 .markdownlint.json
 .prettierignore
@@ -19,6 +17,9 @@ tsconfig.base.json
 **/*.map
 .travis.yml
 CONTRIBUTING.md
+eslint.config.js
+pnpm-lock.yaml
+pnpm-workspace.yaml
 
 !dist/**
 !out/**

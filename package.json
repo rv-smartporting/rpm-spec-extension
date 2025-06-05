@@ -13,7 +13,7 @@
         "url": "https://github.com/rv-smartporting/rpm-spec-extension"
     },
     "engines": {
-        "vscode": "^1.74.0"
+        "vscode": "^1.82.0"
     },
     "categories": [
         "Other"
@@ -46,34 +46,35 @@
         ]
     },
     "scripts": {
-        "vscode:prepublish": "npm run compile",
-        "vscode:package": "vsce package",
+        "vscode:prepublish": "pnpm run package",
+        "package": "webpack --mode production --devtool hidden-source-map",
+        "vscode:package": "vsce package --no-dependencies",
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
         "compile-web": "webpack",
         "watch-web": "webpack --watch",
         "run-in-browser": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=. ./testRoot",
-        "lint": "eslint \"src/**/*.ts\"",
-        "download-api": "vscode-dts dev",
-        "postinstall": "npm run download-api",
+        "lint": "eslint",
+        "download-api": "npx @vscode/dts dev",
+        "postinstall": "pnpm run download-api",
         "extract_l10n": "npx @vscode/l10n-dev export -o ./l10n ./src/web/** && python ./scripts/merge_l10n.py"
     },
     "devDependencies": {
-        "@types/node": "^16.18.23",
-        "@types/vscode": "^1.74.0",
-        "@types/webpack-env": "^1.18.0",
-        "@typescript-eslint/eslint-plugin": "^5.42.0",
-        "@typescript-eslint/parser": "^5.42.0",
-        "@vscode/l10n-dev": "^0.0.24",
-        "@vscode/test-web": "^0.0.41",
-        "@vscode/vsce": "^2.19.0",
-        "eslint": "^8.26.0",
+        "@types/node": "^20.17.57",
+        "@types/vscode": "1.82.0",
+        "@types/webpack-env": "^1.18.8",
+        "@typescript-eslint/eslint-plugin": "^8.33.1",
+        "@typescript-eslint/parser": "^8.33.1",
+        "@vscode/dts": "^0.4.1",
+        "@vscode/l10n-dev": "^0.0.35",
+        "@vscode/test-web": "^0.0.69",
+        "@vscode/vsce": "^3.4.2",
+        "eslint": "^9.28.0",
         "process": "^0.11.10",
-        "ts-loader": "^9.4.2",
-        "typescript": "^4.9.4",
-        "vscode-dts": "^0.3.3",
-        "webpack": "^5.78.0",
-        "webpack-cli": "^5.0.1"
+        "ts-loader": "^9.5.2",
+        "typescript": "^5.8.3",
+        "webpack": "^5.99.9",
+        "webpack-cli": "^6.0.1"
     },
     "dependencies": {
         "log4js": "^6.9.1"

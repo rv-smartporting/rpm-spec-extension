@@ -54,5 +54,6 @@
             "excludeFolders": ["node_modules", ".vscode-test", ".vscode-test-web"]
         }
     },
-    "npm.exclude": ["**/.vscode-test-web/**"]
+    "npm.exclude": ["**/.vscode-test-web/**"],
+    "npm.packageManager": "pnpm"
 }

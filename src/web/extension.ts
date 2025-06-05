@@ -12,7 +12,7 @@
  * Client Entry Point of RPM Spec Plugin
  *
  * Author: Lightning Rainstorm <me@ldby.site>
- * Last Change: Apr 12, 2023
+ * Last Change: June 5, 2025
  **************************************************************************************/
 
 import * as CompletionProviders from "./completionProviders";
@@ -30,57 +30,6 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("demo-ext.command1", async (...args) => {
         vscode.window.showInformationMessage("command1: " + JSON.stringify(args));
     });
-
-    /**
-     * Inline 补全
-     */
-    const inlineProvider: vscode.InlineCompletionItemProvider = {
-        provideInlineCompletionItems: async function (document, position, completionContext, token) {
-            const result: vscode.InlineCompletionList = {
-                items: [],
-                commands: [],
-            };
-
-            for (const [providerName, provider] of CompletionProviders.providers) {
-                if (!provider.inlineHandler) {
-                    continue;
-                }
-                const partResult = await provider.inlineHandler(document, position, completionContext, token);
-                if (partResult) {
-                    result.items = result.items.concat(partResult.items);
-                    if (partResult.commands) {
-                        result.commands = result.commands!.concat(partResult.commands);
-                    }
-                }
-            }
-
-            // Inline 补全可以提供额外的命令
-            if (result.items.length > 0) {
-                result.commands!.push({
-                    command: "demo-ext.command1",
-                    title: "My Inline Completion Demo Command",
-                    arguments: [1, 2],
-                });
-            }
-            return result;
-        },
-
-        handleDidShowCompletionItem(completionItem: vscode.InlineCompletionItem): void {
-            console.log("handleDidShowCompletionItem");
-        },
-
-        /**
-         * Inline 补全条目被部分采纳时回调
-         * @param completionItem Inline 补全条目
-         * @param acceptedLength 已接受的 Inline 补全条目长度
-         */
-        handleDidPartiallyAcceptCompletionItem(
-            completionItem: vscode.InlineCompletionItem,
-            acceptedLength: number
-        ): void {
-            console.log("handleDidPartiallyAcceptCompletionItem");
-        },
-    };
 
     /**
      * 普通补全
@@ -171,8 +120,6 @@ export function activate(context: vscode.ExtensionContext) {
     }
 
     context.subscriptions.push(
-        // 暂时禁用 Inline 补全
-        // vscode.languages.registerInlineCompletionItemProvider({ pattern: "**" }, inlineProvider),
         vscode.languages.registerCompletionItemProvider({ language: "rpmspec" }, normalProvider, " "),
         vscode.languages.registerDefinitionProvider({ language: "rpmspec" }, definitionProvider),
         vscode.languages.registerReferenceProvider({ language: "rpmspec" }, referenceProvider),

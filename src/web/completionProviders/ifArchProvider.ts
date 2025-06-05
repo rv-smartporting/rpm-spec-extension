@@ -12,7 +12,7 @@
  * IfArch Macro Completion Provider of RPM Spec Plugin
  *
  * Author: Lightning Rainstorm <me@ldby.site>
- * Last Change: Apr 12, 2023
+ * Last Change: June 5, 2025
  **************************************************************************************/
 
 import * as vscode from "vscode";
@@ -88,38 +88,6 @@ export class IfArchProvider implements BaseCompletionProvider {
             IfArchProvider._instance = new IfArchProvider(context);
         }
         return IfArchProvider._instance;
-    }
-
-    /**
-     * Inline 补全响应
-     *
-     * @param document TextDocument
-     * @param position 源码位置
-     * @param completionContext Inline 补全上下文
-     * @param token Token 状态
-     * @returns Inline 补全结果
-     */
-    public async inlineHandler(
-        document: vscode.TextDocument,
-        position: vscode.Position,
-        completionContext: vscode.InlineCompletionContext,
-        token: vscode.CancellationToken
-    ) {
-        const result: vscode.InlineCompletionList = {
-            items: this._cachedInlineItems,
-            commands: [],
-        };
-        const lineText = document.lineAt(position.line).text;
-        if (
-            lineText.trimStart().startsWith("%ifarch") &&
-            position.character > 0 &&
-            lineText.at(position.character - 1) === " "
-        ) {
-            for (const item of result.items) {
-                item.range = new vscode.Range(position.line, position.character, position.line, position.character);
-            }
-        }
-        return result;
     }
 
     /**
