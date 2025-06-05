@@ -16,7 +16,7 @@
         "vscode": "^1.82.0"
     },
     "categories": [
-        "Other"
+        "Programming Languages"
     ],
     "activationEvents": [
         "onStartupFinished"
@@ -34,7 +34,8 @@
                 ],
                 "extensions": [
                     ".spec"
-                ]
+                ],
+                "configuration": "./language-configuration.json"
             }
         ],
         "grammars": [
