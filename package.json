@@ -6,7 +6,7 @@
         "rpm",
         "spec"
     ],
-    "version": "0.0.2",
+    "version": "0.0.3",
     "publisher": "RVSmartPorting",
     "repository": {
         "type": "git",
@@ -35,7 +35,7 @@
                 "extensions": [
                     ".spec"
                 ],
-                "configuration": "./language-configuration.json"
+                "configuration": "language-configuration.json"
             }
         ],
         "grammars": [
