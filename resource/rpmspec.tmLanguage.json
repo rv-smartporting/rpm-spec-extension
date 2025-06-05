@@ -6,10 +6,6 @@
     "uuid": "49e56b70-cf79-11e1-9b23-0800200c9a66",
     "patterns": [
         {
-            "match": "(Icon|ExclusiveOs|ExcludeOs|Autoreq):",
-            "name": "keyword.spec"
-        },
-        {
             "match": "(%package)\\s+(.*)",
             "captures": {
                 "1": {
@@ -61,7 +57,7 @@
             ]
         },
         {
-            "begin": "(?i)(Conflicts|Obsoletes|Provides|Requires|Requires\\(.*\\)|Enhances|Suggests|BuildConflicts|BuildRequires|Recommends|PreReq|Supplements):",
+            "begin": "(?i)(Conflicts|Obsoletes|Provides|Requires|Requires\\(.*\\)|Enhances|Suggests|BuildConflicts|BuildRequires|Recommends|PreReq|Supplements|Url|Copyright|License|Summary|Summary\\(.*\\)|Distribution|Vendor|Packager|Group|Source\\d*|Patch\\d*|BuildRoot|BuildArch|Prefix|Icon|ExclusiveOs|ExcludeOs|Autoreq):",
             "beginCaptures": {
                 "1": {
                     "name": "keyword.spec"
@@ -89,7 +85,7 @@
             "name": "keyword.spec"
         },
         {
-            "begin": "(?i)(Name|Version|Release|Url|URL|Copyright|License|Summary|Summary\\(.*\\)|Distribution|Vendor|Packager|Group|Source\\d*|Patch\\d*|BuildRoot|BuildArch|Prefix):",
+            "begin": "(?i)(Name|Version|Release):",
             "beginCaptures": {
                 "1": {
                     "name": "keyword.spec"
@@ -236,8 +232,18 @@
             "name": "keyword.control.spec"
         },
         {
-            "begin": "%\\{",
-            "end": "\\}",
+            "begin": "(%\\{)",
+            "beginCaptures": {
+                "0": {
+                    "name": "keyword.operator.macro.spec"
+                }
+            },
+            "end": "(\\})",
+            "endCaptures": {
+                "0": {
+                    "name": "keyword.operator.macro.spec"
+                }
+            },
             "name": "variable.name.spec"
         },
         {
@@ -309,7 +315,7 @@
             "name": "constant.numeric.spec"
         },
         "stringValue": {
-            "match": "\\b(?![0-9]+$)([\\S]+)\\b",
+            "match": "([\\w\\-\\.:/,\\+]+)",
             "name": "string.quoted.spec"
         }
     }
