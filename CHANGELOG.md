@@ -2,6 +2,13 @@
 
 RPM Spec Plugin Change Log
 
+## [V0.0.6] - 2026-11-21
+
+- Added a GitHub Actions workflow that publishes the extension to the VS Code Marketplace using Trusted Publishing (OIDC), removing the need for an Azure DevOps Personal Access Token
+- Upgraded `@vscode/vsce` to 4.1.1 (requires Node.js 22)
+- Added `RELEASING.md` with the Marketplace publisher policy setup and release process
+- Excluded development-only files (`.github`, `.claude`, `RELEASING.md`) from the packaged VSIX
+
 ## [V0.0.5] - 2026-11-21
 
 - Rewrote the TextMate grammar with a modular, `repository`-based structure
