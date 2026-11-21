@@ -1,2 +1,6 @@
+allowBuilds:
+  '@playwright/browser-chromium': true
+  '@vscode/vsce-sign': true
+  keytar: true
 onlyBuiltDependencies:
   - '@playwright/browser-chromium'

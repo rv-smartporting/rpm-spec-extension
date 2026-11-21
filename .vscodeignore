@@ -2,6 +2,8 @@
 .vscode/**
 .vscode-test/**
 .vscode-test-web/**
+.github/**
+.claude/**
 node_modules/**
 scripts/**
 testRoot/**
@@ -17,6 +19,7 @@ tsconfig.base.json
 **/*.map
 .travis.yml
 CONTRIBUTING.md
+RELEASING.md
 eslint.config.js
 pnpm-lock.yaml
 pnpm-workspace.yaml

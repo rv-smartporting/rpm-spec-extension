@@ -69,7 +69,7 @@
         "@vscode/dts": "^0.4.1",
         "@vscode/l10n-dev": "^0.0.35",
         "@vscode/test-web": "^0.0.69",
-        "@vscode/vsce": "^3.4.2",
+        "@vscode/vsce": "^4.1.1",
         "eslint": "^9.28.0",
         "process": "^0.11.10",
         "ts-loader": "^9.5.2",

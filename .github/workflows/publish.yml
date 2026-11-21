@@ -1,0 +1,90 @@
+# Publish the extension to the VS Code Marketplace using Trusted Publishing (OIDC).
+# See RELEASING.md for the one-time Marketplace publisher configuration.
+name: Publish
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to publish (must match package.json, e.g. v0.0.5)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish to VS Code Marketplace
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      # Required for Marketplace Trusted Publishing: lets the workflow request
+      # a GitHub OIDC token and exchange it for a short-lived credential.
+      id-token: write
+    env:
+      RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+    steps:
+      - name: Check out release tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+          persist-credentials: false
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Verify tag matches package.json
+        run: |
+          VERSION="$(node -p "require('./package.json').version")"
+          if [ "v${VERSION}" != "${RELEASE_TAG}" ]; then
+            echo "::error::Tag '${RELEASE_TAG}' does not match package.json version 'v${VERSION}'."
+            exit 1
+          fi
+
+      - name: Install dependencies
+        # --ignore-scripts skips the Playwright browser download and the
+        # @vscode/dts postinstall, neither of which is needed for publishing.
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Package VSIX
+        run: |
+          NAME="$(node -p "require('./package.json').name")"
+          VERSION="$(node -p "require('./package.json').version")"
+          ARGS=(--no-dependencies)
+          if [[ "${RELEASE_TAG}" == *-* ]]; then
+            ARGS+=(--pre-release)
+          fi
+          pnpm exec vsce package "${ARGS[@]}"
+          echo "VSIX=${NAME}-${VERSION}.vsix" >> "${GITHUB_ENV}"
+
+      - name: Upload VSIX
+        uses: actions/upload-artifact@v4
+        with:
+          name: vsix
+          path: "*.vsix"
+          if-no-files-found: error
+
+      - name: Publish with Trusted Publishing (OIDC)
+        run: |
+          ARGS=(--oidc --no-dependencies --skip-duplicate --packagePath "${VSIX}")
+          if [[ "${RELEASE_TAG}" == *-* ]]; then
+            ARGS+=(--pre-release)
+          fi
+          pnpm exec vsce publish "${ARGS[@]}"
