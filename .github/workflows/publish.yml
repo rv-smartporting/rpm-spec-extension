@@ -50,6 +50,14 @@ jobs:
           node-version: 22
           cache: pnpm
 
+      # Install a fixed vsce version so that publishing a tag created before
+      # the vsce upgrade still gets --oidc support. The CLI is independent from
+      # the extension source checked out below.
+      - name: Install vsce
+        run: |
+          npm install --global @vscode/vsce@4.1.1
+          vsce --version
+
       - name: Verify tag matches package.json
         run: |
           VERSION="$(node -p "require('./package.json').version")"
@@ -71,7 +79,7 @@ jobs:
           if [[ "${RELEASE_TAG}" == *-* ]]; then
             ARGS+=(--pre-release)
           fi
-          pnpm exec vsce package "${ARGS[@]}"
+          vsce package "${ARGS[@]}"
           echo "VSIX=${NAME}-${VERSION}.vsix" >> "${GITHUB_ENV}"
 
       - name: Upload VSIX
@@ -87,4 +95,4 @@ jobs:
           if [[ "${RELEASE_TAG}" == *-* ]]; then
             ARGS+=(--pre-release)
           fi
-          pnpm exec vsce publish "${ARGS[@]}"
+          vsce publish "${ARGS[@]}"
